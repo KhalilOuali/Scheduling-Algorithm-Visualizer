@@ -28,7 +28,7 @@ public class GUIApp extends Application {
 	Scheduler procSched = new Scheduler();
 
 // GUI Resources
-	String[] colors = { "#B5E4F5", "#CDEFB3", "#FBF0AF", "#FACF90", "#FDB1B1", "#F9BDE9" };
+	String[] colors = {"#B5E4F5", "#CDEFB3", "#FBF0AF", "#FACF90", "#FDB1B1", "#F9BDE9", "#D8B3F7"};
 	
 	ImageView addIcon = new ImageView("file:Icons/Add.png");
 	ImageView removeIcon = new ImageView("file:Icons/Remove.png");
@@ -47,14 +47,16 @@ public class GUIApp extends Application {
 		for (ImageView iv : icons) {
 			iv.setFitHeight(size);
 			iv.setPreserveRatio(true);
+			iv.setSmooth(true);
+			iv.setCache(true);
 		}
 	}
-	//Prepare the icons (ImageViews) for later use
+	//Prepare the icons (ImageViews) for later use.
 
 	private String sizeStyle(int width, int height) {
 		return String.format("-fx-min-width: %d; -fx-max-width: %d; -fx-min-height: %d; -fx-max-height: %d;", width, width, height, height);
 	}
-	//String containing the style paramters for a strict size
+	//String containing the style paramters for a strict size.
 
 // Custom GUI Elements
 	public class ProcessPane extends VBox {
@@ -65,7 +67,7 @@ public class GUIApp extends Application {
 		ProcessPane(int _order) {
 			order = _order;
 			processLabel = new Label("Process " + order);
-			processLabel.setStyle(sizeStyle(130, 22) + "-fx-alignment: center; -fx-font-size: 14; -fx-background-radius: 5; -fx-background-color: " + colors[(order-1)%6] + ";");
+			processLabel.setStyle(sizeStyle(130, 22) + "-fx-alignment: center; -fx-font-size: 14; -fx-background-radius: 5; -fx-background-color: " + colors[(order - 1) % 7]);
 
 			Label idLabel = new Label("Process ID");
 			idField = new TextField("P" + order);
@@ -95,7 +97,7 @@ public class GUIApp extends Application {
 			String idText;
 			ImageView idIcon = new ImageView();
 			String toolTipText;
-			String bgColor = "white";
+			String color = "white";
 
 			if (work.job == null) {
 				idIcon.setImage(idleIcon);
@@ -108,27 +110,28 @@ public class GUIApp extends Application {
 
 				if (done) {
 					idIcon.setImage(doneIcon);
-					toolTipText += "Finished." + "\nService time: " + work.job.serviceTime() + "\nWait time: " + work.job.waitTime();
+					toolTipText += "Finished at " + work.to + "\nService time: " + work.job.serviceTime() + "\nWait time: " + work.job.waitTime();
 				} else {
 					idIcon.setImage(interruptedIcon);
-					toolTipText += "Interrupted.";
+					toolTipText += "Interrupted at " + work.to;
 				}
 				
-				bgColor = colors[(work.job.order - 1) % 6];
+				color = colors[(work.job.order - 1) % 7];
 			}
 
-			setUpIcons(22, idIcon);
+			setUpIcons(20, idIcon);
 
 			Label idLabel = new Label(idText);
 			idLabel.setGraphic(idIcon);
-			idLabel.setStyle(sizeStyle((work.to - work.from) * 50, 26) + "-fx-alignment: center; -fx-font-size: 18; -fx-background-radius: 5; -fx-background-color: " + bgColor);
-
+			idLabel.setStyle(sizeStyle((work.to - work.from) * 50, 26) + "-fx-alignment: center; -fx-font-size: 16; -fx-border-color: whitesmoke; -fx-background-color: " + color);
+			
 			Tooltip tp = new Tooltip(toolTipText);
 			tp.setFont(new Font(13));
 			idLabel.setTooltip(tp);
 
 			setTop(idLabel);
-			setLeft(new Label(Integer.toString(work.from)));
+			if(work.from == 0)
+				setLeft(new Label(Integer.toString(work.from)));
 			setRight(new Label(Integer.toString(work.to)));
 		}
 	}
@@ -138,7 +141,7 @@ public class GUIApp extends Application {
 	VBox mainLayout = new VBox();
 		ScrollPane processScrollPane = new ScrollPane();
 			HBox processBox = new HBox();
-				ArrayList<ProcessPane> ProcessPanes = new ArrayList<>();
+				ArrayList<ProcessPane> processPanes = new ArrayList<>();
 				VBox buttonsPane = new VBox();
 					Button removeButton = new Button();
 					Button addButton = new Button();
@@ -200,13 +203,13 @@ public class GUIApp extends Application {
 	}
 	//Remove the child GUI element, if parent has it.
 
-	private void updateProcessPanes() {
+	private void updateprocessPanes() {
 		processBox.getChildren().clear();
-		for (ProcessPane pc : ProcessPanes)
+		for (ProcessPane pc : processPanes)
 			processBox.getChildren().addAll(pc, new Separator(Orientation.VERTICAL));
 
 		buttonsPane.getChildren().clear();
-		if (ProcessPanes.size() > 1)
+		if (processPanes.size() > 1)
 			addElement(buttonsPane, removeButton);
 		addElement(buttonsPane, addButton);
 
@@ -220,14 +223,14 @@ public class GUIApp extends Application {
 
 // GUI actions
 	private void removeButtonAction() {
-		ProcessPanes.remove(ProcessPanes.size() - 1);
-		updateProcessPanes();
+		processPanes.remove(processPanes.size() - 1);
+		updateprocessPanes();
 	}
 	//Remove a process from the list and update the processes panel.
 
 	private void addButtonAction() {
-		ProcessPanes.add(new ProcessPane(ProcessPanes.size() + 1));
-		updateProcessPanes();
+		processPanes.add(new ProcessPane(processPanes.size() + 1));
+		updateprocessPanes();
 	}
 	//Add a process to the list and update the processes panel.
 
@@ -270,7 +273,7 @@ public class GUIApp extends Application {
 
 		// Reading queue and passing it to the process scheduler
 		ArrayList<Scheduler.Job> processQueue = new ArrayList<>();
-		for (ProcessPane pc : ProcessPanes) {
+		for (ProcessPane pc : processPanes) {
 			String _id = pc.idField.getText();
 			int _timeOfArrival = Integer.parseInt(pc.arrivalField.getText());
 			int _estimatedCPUTime = Integer.parseInt(pc.cpuTimeField.getText());
@@ -338,7 +341,7 @@ public class GUIApp extends Application {
 		int newArrivalTime;
 		boolean first = true;
 
-		for (ProcessPane pc : ProcessPanes) {
+		for (ProcessPane pc : processPanes) {
 			String errorReference = " (" + pc.processLabel.getText() + ")";
 
 			// Verify process ID
@@ -457,7 +460,7 @@ public class GUIApp extends Application {
 		centerPane.setRight(scheduleButton);
 		centerPane.setStyle("-fx-padding: 10;");
 
-		scheduleBox.setStyle("-fx-spacing: 10; -fx-padding: 20;");
+		scheduleBox.setStyle("-fx-spacing: 0; -fx-padding: 20");
 
 		scheduleScrollPane.setContent(scheduleBox);
 		scheduleScrollPane.setStyle("-fx-min-height: 85; -fx-max-height: 85; -fx-vbar-policy: never; -fx-pannable: true;");
@@ -481,13 +484,14 @@ public class GUIApp extends Application {
 		secondChoiceAction(); // Set up the default algorithm options
 
 		mainLayout.getChildren().addAll( processScrollPane, centerPane, scheduleScrollPane, performancePane, new Separator(Orientation.HORIZONTAL), errorLabel);
-		
+		//mainLayout.setStyle("-fx-background-color: white");
+
 		// Configuring application window
 		Scene mainScene = new Scene(mainLayout);
 		primaryStage.setScene(mainScene);
 		primaryStage.setMinHeight(500);
 		primaryStage.setMaxHeight(500);
-		primaryStage.setMinWidth(800);
+		primaryStage.setMinWidth(900);
 		primaryStage.setTitle("Scheduling Algorithm Visualizer");
 		primaryStage.getIcons().add(new Image("file:Icons/icon.png"));
 		primaryStage.show();
