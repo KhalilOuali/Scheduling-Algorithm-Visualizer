@@ -55,7 +55,7 @@ public class GUIApp extends Application {
 
 	private String sizeStyle(int width, int height) {
 		return String.format(
-			"-fx-min-width: %d; -fx-max-width: %d; -fx-min-height: %d; -fx-max-height: %d", 
+			"-fx-min-width: %d; -fx-max-width: %d; -fx-min-height: %d; -fx-max-height: %d; ", 
 			width, width, height, height
 		);
 	}
@@ -436,7 +436,7 @@ public class GUIApp extends Application {
 		mainChoice.setOnAction(e -> mainChoiceAction());
 
 		quantumLabel.setText("Quantum:");
-		quantumLabel.setStyle(sizeStyle(60, 24) + "-fx-font-size: 12; -fx-alignment: center-right");
+		quantumLabel.setStyle("-fx-min-height:24; -fx-font-size: 12; -fx-alignment: center-right");
 
 		quantumField.setPrefWidth(40);
 
