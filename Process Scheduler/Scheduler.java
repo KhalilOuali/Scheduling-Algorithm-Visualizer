@@ -172,7 +172,7 @@ public class Scheduler {
 		int s = 0;
 		for (Job j : finishedJobs)
 			s += j.serviceTime();
-		
+
 		return (float) s / finishedJobs.size();
 	}
 
@@ -180,7 +180,7 @@ public class Scheduler {
 		int s = 0;
 		for (Job j : finishedJobs)
 			s += j.waitTime();
-		
+
 		return (float) s / finishedJobs.size();
 	}
 

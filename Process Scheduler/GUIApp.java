@@ -30,17 +30,17 @@ public class GUIApp extends Application {
 // GUI Resources
 	String[] colors = {"#B5E4F5", "#CDEFB3", "#FBF0AF", "#FACF90", "#FDB1B1", "#F9BDE9", "#D8B3F7"};
 	
-	ImageView addIcon = new ImageView("file:Icons/Add.png");
-	ImageView removeIcon = new ImageView("file:Icons/Remove.png");
-	ImageView plusIcon = new ImageView("file:Icons/Add.png");
+	ImageView addIcon 		= new ImageView("file:Icons/Add.png");
+	ImageView removeIcon 	= new ImageView("file:Icons/Remove.png");
+	ImageView plusIcon 		= new ImageView("file:Icons/Add.png");
 	ImageView calculateIcon = new ImageView("file:Icons/Calculate.png");
-	ImageView serviceIcon = new ImageView("file:Icons/Service.png");
-	ImageView waitIcon = new ImageView("file:Icons/Wait.png");
-	ImageView errorIcon = new ImageView("file:Icons/Error.png");
-	ImageView warningIcon = new ImageView("file:Icons/Warning.png");
-	Image doneIcon = new Image("file:Icons/Done.png");
-	Image interruptedIcon = new Image("file:Icons/Interrupted.png");
-	Image idleIcon = new Image("file:Icons/Idle.png");
+	ImageView serviceIcon	= new ImageView("file:Icons/Service.png");
+	ImageView waitIcon 		= new ImageView("file:Icons/Wait.png");
+	ImageView errorIcon 	= new ImageView("file:Icons/Error.png");
+	ImageView warningIcon 	= new ImageView("file:Icons/Warning.png");
+	Image doneIcon 			= new Image("file:Icons/Done.png");
+	Image interruptedIcon 	= new Image("file:Icons/Interrupted.png");
+	Image idleIcon 			= new Image("file:Icons/Idle.png");
 
 // GUI setup utilities
 	private void setUpIcons(int size, ImageView... icons) {
@@ -54,7 +54,10 @@ public class GUIApp extends Application {
 	//Prepare the icons (ImageViews) for later use.
 
 	private String sizeStyle(int width, int height) {
-		return String.format("-fx-min-width: %d; -fx-max-width: %d; -fx-min-height: %d; -fx-max-height: %d;", width, width, height, height);
+		return String.format(
+			"-fx-min-width: %d; -fx-max-width: %d; -fx-min-height: %d; -fx-max-height: %d", 
+			width, width, height, height
+		);
 	}
 	//String containing the style paramters for a strict size.
 
@@ -86,8 +89,8 @@ public class GUIApp extends Application {
 				priorityLabel, priorityField
 			);
 			
-			idLabel.setStyle("-fx-padding: 5 0 0 0;");
-			setStyle(sizeStyle(150, 220) + "-fx-spacing: 2; -fx-padding: 5 10 10 10;");
+			idLabel.setStyle("-fx-padding: 5 0 0 0");
+			setStyle(sizeStyle(150, 220) + "-fx-spacing: 2; -fx-padding: 5 10 10 10");
 		}
 	}
 	//A configuration panel for a process.
@@ -123,7 +126,7 @@ public class GUIApp extends Application {
 
 			Label idLabel = new Label(idText);
 			idLabel.setGraphic(idIcon);
-			idLabel.setStyle(sizeStyle((work.to - work.from) * 50, 26) + "-fx-alignment: center; -fx-font-size: 16; -fx-border-color: whitesmoke; -fx-background-color: " + color);
+			idLabel.setStyle(sizeStyle((work.to - work.from) * 50, 26) +  "-fx-alignment: center; -fx-font-size: 16; -fx-border-color: whitesmoke; -fx-background-color: " + color);
 			
 			Tooltip tp = new Tooltip(toolTipText);
 			tp.setFont(new Font(13));
@@ -131,7 +134,7 @@ public class GUIApp extends Application {
 
 			setTop(idLabel);
 			if(work.from == 0)
-				setLeft(new Label(Integer.toString(work.from)));
+				setLeft(new Label("0"));
 			setRight(new Label(Integer.toString(work.to)));
 		}
 	}
@@ -417,15 +420,15 @@ public class GUIApp extends Application {
 		addButton.setOnAction(e -> addButtonAction());
 
 		buttonsPane.getChildren().addAll(removeButton, addButton);
-		buttonsPane.setStyle(sizeStyle(150, 220) + "-fx-spacing: 10; -fx-alignment: center;");
+		buttonsPane.setStyle(sizeStyle(150, 220) + "-fx-spacing: 10; -fx-alignment: center");
 
-		processBox.setStyle("-fx-spacing: 10; -fx-padding: 10; -fx-min-height: 240;");
+		processBox.setStyle("-fx-spacing: 10; -fx-padding: 10; -fx-min-height: 240");
 
 		processScrollPane.setContent(processBox);
-		processScrollPane.setStyle("-fx-pannable: true; -fx-min-height: 260;");
+		processScrollPane.setStyle("-fx-pannable: true; -fx-min-height: 260");
 
 		algorithmLabel.setText("Algorithm configuration:  ");
-		algorithmLabel.setStyle(sizeStyle(180, 24) + "-fx-font-size: 14; -fx-alignment: center;");
+		algorithmLabel.setStyle(sizeStyle(180, 24) + "-fx-font-size: 14; -fx-alignment: center");
 
 		mainChoice.getItems().addAll("FCFS", "SJF", "Priority", "Round Robin");
 		mainChoice.setValue("FCFS");
@@ -433,12 +436,12 @@ public class GUIApp extends Application {
 		mainChoice.setOnAction(e -> mainChoiceAction());
 
 		quantumLabel.setText("Quantum:");
-		quantumLabel.setStyle(sizeStyle(60, 24) + "-fx-font-size: 12; -fx-alignment: center-right;");
+		quantumLabel.setStyle(sizeStyle(60, 24) + "-fx-font-size: 12; -fx-alignment: center-right");
 
 		quantumField.setPrefWidth(40);
 
 		preemptiveCheck.setText("Preemptive");
-		preemptiveCheck.setStyle("-fx-min-height: 25; -fx-alignment: center;");
+		preemptiveCheck.setStyle("-fx-min-height: 25; -fx-alignment: center");
 
 		plusLabel.setGraphic(plusIcon);
 		plusLabel.setMaxSize(24, 24);
@@ -458,26 +461,26 @@ public class GUIApp extends Application {
 		centerPane.setLeft(algorithmLabel);
 		centerPane.setCenter(algorithmBox);
 		centerPane.setRight(scheduleButton);
-		centerPane.setStyle("-fx-padding: 10;");
+		centerPane.setStyle("-fx-padding: 10");
 
 		scheduleBox.setStyle("-fx-spacing: 0; -fx-padding: 20");
 
 		scheduleScrollPane.setContent(scheduleBox);
-		scheduleScrollPane.setStyle("-fx-min-height: 85; -fx-max-height: 85; -fx-vbar-policy: never; -fx-pannable: true;");
+		scheduleScrollPane.setStyle("-fx-min-height: 85; -fx-max-height: 85; -fx-vbar-policy: never; -fx-pannable: true");
 		scheduleScrollPane.setVmax(0);
 		
 		serviceTimeLabel.setGraphic(serviceIcon);
 		serviceTimeLabel.setText(" Average service time");
-		serviceTimeLabel.setStyle("-fx-font-size: 14;");
+		serviceTimeLabel.setStyle("-fx-font-size: 14");
 
 		waitTimeLabel.setGraphic(waitIcon);
 		waitTimeLabel.setText(" Average wait time");
-		waitTimeLabel.setStyle("-fx-font-size: 14;");
+		waitTimeLabel.setStyle("-fx-font-size: 14");
 
 		performancePane.getChildren().addAll(serviceTimeLabel, waitTimeLabel);
-		performancePane.setStyle("-fx-spacing: 100; -fx-padding: 10; -fx-alignment: center;");
+		performancePane.setStyle("-fx-spacing: 100; -fx-padding: 10; -fx-alignment: center");
 
-		errorLabel.setStyle("-fx-padding: 5 10 5 10;");
+		errorLabel.setStyle("-fx-padding: 5 10 5 10");
 
 		addButtonAction(); // Add the first process
 		mainChoiceAction(); // Set up the default algorithm options

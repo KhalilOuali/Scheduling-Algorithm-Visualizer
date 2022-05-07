@@ -109,11 +109,12 @@ public class ConsoleApp {
 
 	private static void outputFinished() {
 		for (Scheduler.Job j : procSched.finishedJobs) {
-			System.out.println("- Job ID: " + j.id + "\n" +
-				"	Arrived     : " + j.properties[Scheduler._ARRIVAL] + "\n" +
-				"	Finished    : " + j.finished + "\n" +
-				"	Wait time   : " + j.waitTime() + "\n" +
-				"	Service time: " + j.serviceTime()
+			System.out.println(
+				"- Job ID: " + j.id + "\n" +
+					"	Arrived     : " + j.properties[Scheduler._ARRIVAL] + "\n" +
+					"	Finished    : " + j.finished + "\n" +
+					"	Wait time   : " + j.waitTime() + "\n" +
+					"	Service time: " + j.serviceTime()
 			);
 		}
 	}
