@@ -1,5 +1,5 @@
 # Scheduling-Algorithm-Visualizer
-A java program which visualizes a few process scheduling algorithms, for teaching/learning purposes.
+A java/javafx program which visualizes a few process scheduling algorithms, for teaching/learning purposes.
 
 ![image](https://user-images.githubusercontent.com/68998620/167233425-fb3aacfd-da47-4723-bb7b-c30ed961d36a.png)
 
