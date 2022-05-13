@@ -114,7 +114,7 @@ public class ConsoleApp {
 					"	Arrived     : " + j.properties[Scheduler._ARRIVAL] + "\n" +
 					"	Finished    : " + j.finished + "\n" +
 					"	Wait time   : " + j.waitTime() + "\n" +
-					"	Service time: " + j.serviceTime()
+					"	Turnaround time: " + j.turnAroundTime()
 			);
 		}
 	}
@@ -137,7 +137,7 @@ public class ConsoleApp {
 			}
 
 			System.out.println("\n---------------- Performance:");
-			System.out.printf("Average service time: %.2f\n", procSched.averageServiceTime());
+			System.out.printf("Average turnaround time: %.2f\n", procSched.averageTurnAroundTime());
 			System.out.printf("Average wait time:  %.2f\n", procSched.averageWaitTime());
 		}
 

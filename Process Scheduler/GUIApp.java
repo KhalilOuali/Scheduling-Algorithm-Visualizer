@@ -34,7 +34,7 @@ public class GUIApp extends Application {
 	ImageView removeIcon 	= new ImageView("file:Icons/Remove.png");
 	ImageView plusIcon 		= new ImageView("file:Icons/Add.png");
 	ImageView calculateIcon = new ImageView("file:Icons/Calculate.png");
-	ImageView serviceIcon	= new ImageView("file:Icons/Service.png");
+	ImageView turnAroundIcon	= new ImageView("file:Icons/Turnaround.png");
 	ImageView waitIcon 		= new ImageView("file:Icons/Wait.png");
 	ImageView errorIcon 	= new ImageView("file:Icons/Error.png");
 	ImageView warningIcon 	= new ImageView("file:Icons/Warning.png");
@@ -96,7 +96,7 @@ public class GUIApp extends Application {
 	//A configuration panel for a process.
 
 	public class SchedulePane extends BorderPane {
-		SchedulePane(Scheduler.Work work) {
+		SchedulePane(Scheduler.Work work, boolean first) {
 			String idText;
 			ImageView idIcon = new ImageView();
 			String toolTipText;
@@ -113,7 +113,7 @@ public class GUIApp extends Application {
 
 				if (done) {
 					idIcon.setImage(doneIcon);
-					toolTipText += "Finished at " + work.to + "\nService time: " + work.job.serviceTime() + "\nWait time: " + work.job.waitTime();
+					toolTipText += "Finished at " + work.to + "\nTurnaround time: " + work.job.turnAroundTime() + "\nWait time: " + work.job.waitTime();
 				} else {
 					idIcon.setImage(interruptedIcon);
 					toolTipText += "Interrupted at " + work.to;
@@ -133,8 +133,8 @@ public class GUIApp extends Application {
 			idLabel.setTooltip(tp);
 
 			setTop(idLabel);
-			if(work.from == 0)
-				setLeft(new Label("0"));
+			if(first)
+				setLeft(new Label(Integer.toString(work.from)));
 			setRight(new Label(Integer.toString(work.to)));
 		}
 	}
@@ -163,7 +163,7 @@ public class GUIApp extends Application {
 			HBox scheduleBox = new HBox();
 				// schedulePanes
 		HBox performancePane = new HBox();
-			Label serviceTimeLabel = new Label();
+			Label turnAroundTimeLabel = new Label();
 			Label waitTimeLabel = new Label();
 		Label errorLabel = new Label();
 
@@ -302,10 +302,13 @@ public class GUIApp extends Application {
 		// Output the schedule and performance criteria
 		scheduleBox.getChildren().clear();
 
-		for (Scheduler.Work work : works)
-			scheduleBox.getChildren().add(new SchedulePane(work));
+		boolean first = true;
+		for (Scheduler.Work work : works) {
+			scheduleBox.getChildren().add(new SchedulePane(work, first));
+			first = false;
+		}
 		
-		serviceTimeLabel.setText(" Average service time: " + String.format("%.2f", procSched.averageServiceTime()));
+		turnAroundTimeLabel.setText(" Average turnaround time: " + String.format("%.2f", procSched.averageTurnAroundTime()));
 		waitTimeLabel.setText(" Average wait time: " + String.format("%.2f", procSched.averageWaitTime()));
 	}
 	//If the input (processes and algorithm) is valid, calculate the process schedule by using Scheduler class, and output it.
@@ -404,7 +407,7 @@ public class GUIApp extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		// Setting up icons
-		setUpIcons(16, errorIcon, warningIcon, calculateIcon, serviceIcon, waitIcon);
+		setUpIcons(16, errorIcon, warningIcon, calculateIcon, turnAroundIcon, waitIcon);
 		setUpIcons(30, removeIcon, addIcon);
 		setUpIcons(20, plusIcon);
 
@@ -469,15 +472,15 @@ public class GUIApp extends Application {
 		scheduleScrollPane.setStyle("-fx-min-height: 85; -fx-max-height: 85; -fx-vbar-policy: never; -fx-pannable: true");
 		scheduleScrollPane.setVmax(0);
 		
-		serviceTimeLabel.setGraphic(serviceIcon);
-		serviceTimeLabel.setText(" Average service time");
-		serviceTimeLabel.setStyle("-fx-font-size: 14");
+		turnAroundTimeLabel.setGraphic(turnAroundIcon);
+		turnAroundTimeLabel.setText(" Average turnaround time");
+		turnAroundTimeLabel.setStyle("-fx-font-size: 14");
 
 		waitTimeLabel.setGraphic(waitIcon);
 		waitTimeLabel.setText(" Average wait time");
 		waitTimeLabel.setStyle("-fx-font-size: 14");
 
-		performancePane.getChildren().addAll(serviceTimeLabel, waitTimeLabel);
+		performancePane.getChildren().addAll(turnAroundTimeLabel, waitTimeLabel);
 		performancePane.setStyle("-fx-spacing: 100; -fx-padding: 10; -fx-alignment: center");
 
 		errorLabel.setStyle("-fx-padding: 5 10 5 10");

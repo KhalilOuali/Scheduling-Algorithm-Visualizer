@@ -34,7 +34,7 @@ public class Scheduler {
 		}
 
 		// Performance criteria
-		public int serviceTime() {
+		public int turnAroundTime() {
 			return finished - properties[_ARRIVAL];
 		}
 
@@ -168,10 +168,10 @@ public class Scheduler {
 	}
 
 	// Performance
-	public float averageServiceTime() {
+	public float averageTurnAroundTime() {
 		int s = 0;
 		for (Job j : finishedJobs)
-			s += j.serviceTime();
+			s += j.turnAroundTime();
 
 		return (float) s / finishedJobs.size();
 	}
