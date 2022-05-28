@@ -4,6 +4,34 @@ import java.util.Scanner;
 public class ConsoleApp {
 	static Scheduler procSched = new Scheduler();
 
+	// Input verficiation
+	private static int readInt(Scanner input) {
+		while (!input.hasNextInt()) {
+			input.next();
+			System.out.println("Input error: please enter an integer number.");
+		}
+
+		return input.nextInt();
+	}
+
+	private static boolean readBoolean(Scanner input) {
+		while (!input.hasNextBoolean()) {
+			input.next();
+			System.out.println("Input error: please enter an \"true\" or \"false\".");
+		}
+
+		return input.nextBoolean();
+	}
+
+	private static byte readByte(Scanner input) {
+		while (!input.hasNextByte()) {
+			input.next();
+			System.out.println("Input error: please enter an integer number.");
+		}
+
+		return input.nextByte();
+	}
+
 	// Console Input
 	private static Scheduler.Job inputJob(Scanner input) {
 		String _id;
@@ -11,31 +39,23 @@ public class ConsoleApp {
 		int _estimatedCPUTime;
 		int _priority;
 
-		while (true) {
-			System.out.print("	Process ID: ");
-
-			_id = input.next();
-
-			if (_id.isEmpty())
-				System.out.println("Input error: please enter a valid process id.");
-			else
-				break;
-		}
+		System.out.print("	Process ID: ");
+		_id = input.next();
+		//System.out.println("Input error: please enter a valid process id.");
 
 		while (true) {
 			System.out.print("	Arrival   : ");
-			_timeOfArrival = input.nextInt();
+			_timeOfArrival = readInt(input);
 
 			if (_timeOfArrival < 0)
-				System.out.println("Input error: time of arrival must be ≥ 0.");
+				System.out.println("Input error: time of arrival must be >= 0.");
 			else
 				break;
 		}
-		;
 
 		while (true) {
 			System.out.print("	CPU Time  : ");
-			_estimatedCPUTime = input.nextInt();
+			_estimatedCPUTime = readInt(input);
 
 			if (_estimatedCPUTime < 1)
 				System.out.println("Input error: estimated CPU time must be > 0.");
@@ -44,7 +64,7 @@ public class ConsoleApp {
 		}
 
 		System.out.print("	Priority  : ");
-		_priority = input.nextInt();
+		_priority = readInt(input);
 
 		return procSched.new Job(_id, _timeOfArrival, _estimatedCPUTime, _priority, 0);
 	}
@@ -55,7 +75,7 @@ public class ConsoleApp {
 		int n;
 		while (true) {
 			System.out.print("Number of Jobs: ");
-			n = input.nextInt();
+			n = readInt(input);
 
 			if (n < 1)
 				System.out.println("Input error: Number of jobs must be > 0.");
@@ -84,7 +104,7 @@ public class ConsoleApp {
 	}
 
 	private static void inputAlgorithm(Scanner input) {
-		boolean preemptive;
+		boolean preemptive = false;
 		byte[] criteria = { Scheduler.NONE, Scheduler.NONE, Scheduler.NONE };
 		int quantum;
 
@@ -92,7 +112,7 @@ public class ConsoleApp {
 		while (true) {
 			System.out.println("0: FCFS | 1: SJF | 2: Priority | 3: Round Robin");
 			System.out.print("Scheduling algorithm: ");
-			c = input.nextByte();
+			c = readByte(input);
 
 			if (c < 0 || 3 < c)
 				System.out.println("Input error: please choose one of the indicated options.");
@@ -100,17 +120,15 @@ public class ConsoleApp {
 				break;
 		}
 
-		if (c == 0 || c == 3)
-			preemptive = false;
-		else {
+		if (c == 1 || c == 2) {
 			System.out.print("(true | false) Preemptive? ");
-			preemptive = input.nextBoolean();
+			preemptive = readBoolean(input);
 		}
 
 		if (c == 3) {
 			while (true) {
 				System.out.print("Quantum: ");
-				quantum = input.nextInt();
+				quantum = readInt(input);
 
 				if (quantum < 1)
 					System.out.println("Input error: quantum must be > 0.");
@@ -125,12 +143,12 @@ public class ConsoleApp {
 
 			while (true) {
 				System.out.print("Second criterion: ");
-				criteria[1] = input.nextByte();
+				criteria[1] = readByte(input);
 
 				if (criteria[1] < -1 || 2 < criteria[1])
 					System.out.println("Input error: please choose one of the indicated options.");
 				else if (criteria[1] == criteria[0])
-					System.out.println("Input error: Scheduling criteria must be different.");
+					System.out.println("Input error: Selection criteria must be different.");
 				else
 					break;
 			}
@@ -138,12 +156,12 @@ public class ConsoleApp {
 			if (criteria[1] != -1) {
 				while (true) {
 					System.out.print("Third criterion: ");
-					criteria[2] = input.nextByte();
+					criteria[2] = readByte(input);
 
 					if (criteria[2] < -1 || 2 < criteria[2])
 						System.out.println("Input error: please choose one of the indicated options.");
 					else if (criteria[2] == criteria[0] || criteria[2] == criteria[1])
-						System.out.println("Input error: Scheduling criteria must be different.");
+						System.out.println("Input error: Selection criteria must be different.");
 					else
 						break;
 				}
@@ -156,18 +174,28 @@ public class ConsoleApp {
 	// Console Output
 	private static void outputSchedule(ArrayList<Scheduler.Work> works) {
 		for (Scheduler.Work w : works) {
-			String activeJobId = (w.job == null) ? "Nothing" : w.job.id;
+			String activeJobId = "Nothing";
+
+			if (w.job != null)
+				activeJobId = w.job.id + (w.to == w.job.finished ? " (Finished)" : " (Interrupted)");
+			
 			System.out.printf("%2d - %2d: %s\n", w.from, w.to, activeJobId);
 		}
 	}
 
 	private static void outputFinished() {
 		for (Scheduler.Job j : procSched.finishedJobs) {
-			System.out.println("- Job ID: " + j.id + "\n" + "	Arrived     : " + j.properties[Scheduler._ARRIVAL] + "\n" + "	Finished    : " + j.finished + "\n" + "	Wait time   : " + j.waitTime()
-					+ "\n" + "	Turnaround time: " + j.turnAroundTime());
+			System.out.println(
+				"- Job ID: " + j.id + "\n" + 
+				"	Arrived at     : " + j.properties[Scheduler._ARRIVAL] + "\n" +
+				"	Finished at    : " + j.finished + "\n" +
+				"	Waiting time   : " + j.waitTime() + "\n" +
+				"	Turnaround time: " + j.turnAroundTime()
+			);
 		}
 	}
 
+	// Main
 	public static void main(String[] args) {
 		try (Scanner input = new Scanner(System.in)) {
 			inputQueue(input);
@@ -177,21 +205,23 @@ public class ConsoleApp {
 			ArrayList<Scheduler.Work> works = procSched.schedule();
 			outputSchedule(works);
 
+			System.out.println("\n---------------- Performance:");
+			System.out.printf("Average turnaround time: %.2f\n", procSched.averageTurnAroundTime());
+			System.out.printf("Average waiting time   :  %.2f\n", procSched.averageWaitTime());
+
 			boolean showJobs;
 			System.out.print("\n(true | false) Show final jobs' states? ");
-			showJobs = input.nextBoolean();
+			showJobs = readBoolean(input);
 			if (showJobs) {
 				System.out.println("\n---------------- Final results:");
 				outputFinished();
 			}
 
-			System.out.println("\n---------------- Performance:");
-			System.out.printf("Average turnaround time: %.2f\n", procSched.averageTurnAroundTime());
-			System.out.printf("Average wait time:  %.2f\n", procSched.averageWaitTime());
-
 			input.nextLine();
 			System.out.println("\nPress enter to exit.");
 			input.nextLine();
+		} catch (Exception e) {
+			System.out.println("I/O error. Program will exit.");
 		}
 
 		System.out.println();
